@@ -28,8 +28,9 @@
               "src/assets"
             ],
             "styles": [
-              "node_modules/flowy/demo/styles.css",
-              "src/styles.scss"
+              "src/styles.scss",
+              "node_modules/flowy/demo/flowy.min.css",
+              "node_modules/flowy/demo/styles.css"
             ],
             "scripts": [
               "node_modules/flowy/lib/flowy.js"

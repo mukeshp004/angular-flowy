@@ -11,6 +11,10 @@ const routes: Routes = [
   {
     path: 'flowy',
     component: FlowyComponent,
+  },
+  {
+    path: '',
+    component: FlowyComponent,
   }
 ];
 

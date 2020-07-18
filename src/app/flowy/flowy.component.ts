@@ -1,4 +1,5 @@
-import { AfterViewInit, Component, OnInit } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { FlowyService } from './flowy.service';
 
 @Component({
   selector: 'app-flowy',
@@ -6,28 +7,40 @@ import { AfterViewInit, Component, OnInit } from '@angular/core';
   styleUrls: ['./flowy.component.scss']
 })
 
-export class FlowyComponent implements OnInit, AfterViewInit {
+export class FlowyComponent implements OnInit, AfterViewInit, OnDestroy {
+  @ViewChild('canvas') canvas: ElementRef;
+  flowyCopy: any;
   rightcard = false;
   tempblock: any;
   tempblock2: any;
 
-  constructor() { }
+  constructor(private flowService: FlowyService) { }
 
   ngOnInit(): void {
+    console.log('ngOnInit');
   }
 
   ngAfterViewInit(): void {
-    this.setupFlowy();
+      console.log('viewInit');
+      this.setupFlowy();
+
   }
 
   setupFlowy(): void {
     const spacingX = 40;
     const spacingY = 100;
 
-    document.getElementById('blocklist').innerHTML = `<div class="blockelem create-flowy noselect"><input type="hidden" name="blockelemtype" class="blockelemtype" value="1"><div class="grabme"><img src="assets/grabme.svg"></div><div class="blockin">                  <div class="blockico"><span></span><img src="assets/eye.svg"></div><div class="blocktext">                        <p class="blocktitle">New visitor</p><p class="blockdesc">Triggers when somebody visits a specified page</p>        </div></div></div><div class="blockelem create-flowy noselect"><input type="hidden" name="blockelemtype" class="blockelemtype" value="2"><div class="grabme"><img src="assets/grabme.svg"></div><div class="blockin">                    <div class="blockico"><span></span><img src="assets/action.svg"></div><div class="blocktext">                        <p class="blocktitle">Action is performed</p><p class="blockdesc">Triggers when somebody performs a specified action</p></div></div></div><div class="blockelem create-flowy noselect"><input type="hidden" name="blockelemtype" class="blockelemtype" value="3"><div class="grabme"><img src="assets/grabme.svg"></div><div class="blockin">                    <div class="blockico"><span></span><img src="assets/time.svg"></div><div class="blocktext">                        <p class="blocktitle">Time has passed</p><p class="blockdesc">Triggers after a specified amount of time</p>          </div></div></div><div class="blockelem create-flowy noselect"><input type="hidden" name="blockelemtype" class="blockelemtype" value="4"><div class="grabme"><img src="assets/grabme.svg"></div><div class="blockin">                    <div class="blockico"><span></span><img src="assets/error.svg"></div><div class="blocktext">                        <p class="blocktitle">Error prompt</p><p class="blockdesc">Triggers when a specified error happens</p>              </div></div></div>`;
+    document.getElementById('blocklist').innerHTML = this.flowService.template;
 
     // Initialize Flowy
-    flowy(document.getElementById('canvas'), this.onGrab, this.onRelease, this.onSnap, this.onRearrange, spacingX, spacingY);
+    // flowy(document.getElementById('canvas'), this.onGrab, this.onRelease, this.onSnap, this.onRearrange, spacingX, spacingY);
+    // flowy(document.getElementById('canvas'));
+
+    // if (!this.flowService.instance) {
+    this.flowService.instance = true;
+    this.flowService.d = flowy(this.canvas.nativeElement, this.onGrab, this.onRelease, this.onSnap, this.onRearrange, spacingX, spacingY);
+
+
     this.setupListener();
   }
 
@@ -86,6 +99,7 @@ export class FlowyComponent implements OnInit, AfterViewInit {
     let noinfo = false;
 
     const beginTouch = (event: any) => {
+        console.log('beginTouch');
         aclick = true;
         noinfo = false;
         if (event.target.closest('.create-flowy')) {
@@ -98,6 +112,7 @@ export class FlowyComponent implements OnInit, AfterViewInit {
     };
 
     const doneTouch = (event: any) => {
+        console.log('doneTouch');
         if (event.type === 'mouseup' && aclick && !noinfo) {
           if (!this.rightcard && event.target.closest('.block') && !event.target.closest('.block').classList.contains('dragging')) {
                 this.tempblock = event.target.closest('.block');
@@ -113,16 +128,21 @@ export class FlowyComponent implements OnInit, AfterViewInit {
     addEventListener('mousemove', checkTouch, false);
     addEventListener('mouseup', doneTouch, false);
 
-    this.addEventListenerMulti('touchstart', beginTouch, false, '.block');
+    // this.addEventListenerMulti('touchstart', beginTouch, false, '.block');
   }
 
   addEventListenerMulti(type: any, listener: any, capture: any, selector: any): void {
+      console.log(selector);
       const nodes = document.querySelectorAll(selector);
 
       // tslint:disable-next-line: prefer-for-of
       for (let i = 0; i < nodes.length; i++) {
           nodes[i].addEventListener(type, listener, capture);
       }
+  }
+
+  ngOnDestroy(): void {
+    flowy.deleteBlocks();
   }
 
 }
