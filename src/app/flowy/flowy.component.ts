@@ -39,6 +39,7 @@ export class FlowyComponent implements OnInit, AfterViewInit, OnDestroy {
     // if (!this.flowService.instance) {
     this.flowService.instance = true;
     this.flowService.d = flowy(this.wrapper.nativeElement, this.onGrab, this.onRelease, this.onSnap, this.onRearrange, spacingX, spacingY);
+    // this.flowService.d = flowy(this.wrapper.nativeElement);
 
 
     this.setupListener();
