@@ -8,7 +8,7 @@ import { FlowyService } from './flowy.service';
 })
 
 export class FlowyComponent implements OnInit, AfterViewInit, OnDestroy {
-  @ViewChild('canvas') canvas: ElementRef;
+  @ViewChild('wrapper') wrapper: ElementRef;
   flowyCopy: any;
   rightcard = false;
   tempblock: any;
@@ -38,7 +38,7 @@ export class FlowyComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // if (!this.flowService.instance) {
     this.flowService.instance = true;
-    this.flowService.d = flowy(this.canvas.nativeElement, this.onGrab, this.onRelease, this.onSnap, this.onRearrange, spacingX, spacingY);
+    this.flowService.d = flowy(this.wrapper.nativeElement, this.onGrab, this.onRelease, this.onSnap, this.onRearrange, spacingX, spacingY);
 
 
     this.setupListener();
